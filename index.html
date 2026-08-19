@@ -16,6 +16,7 @@
       align-items: center;
       min-height: 100vh;
       box-sizing: border-box;
+      touch-action: manipulation;
     }
     
     .settings-btn {
@@ -46,13 +47,14 @@
       box-shadow: 0 8px 15px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: transform 0.2s;
+      user-select: none;
     }
 
     .card:active {
       transform: scale(0.95);
     }
 
-    .card text, .card span {
+    .card span {
       display: block;
       font-size: 20px;
       font-weight: bold;
@@ -113,18 +115,53 @@
   </div>
 
   <script>
-    // مكتبة الأصوات (.wav)
-    const audioFiles = {
-      kaaba: new Audio('audio/takbeer.wav'),
-      bee: new Audio('audio/bee.wav'),
-      rain: new Audio('audio/rain.wav'),
-      moon: new Audio('audio/birds.wav')
+    // تهيئة مكتبة الأصوات المباشرة
+    const soundPaths = {
+      kaaba: 'takbeer.wav',
+      bee: 'bee.wav',
+      rain: 'rain.wav',
+      moon: 'birds.wav'
     };
 
+    const audioFiles = {};
+    let isAudioUnlocked = false;
+
+    // تحميل وتجهيز عناصر الصوت مسبقاً
+    Object.keys(soundPaths).forEach(key => {
+      const audio = new Audio(soundPaths[key]);
+      audio.preload = 'auto';
+      audioFiles[key] = audio;
+    });
+
+    // دالة لفك حظر الصوت المترتب على سياسات المتصفح عند أول لمسة
+    function unlockAudio() {
+      if (isAudioUnlocked) return;
+      Object.keys(audioFiles).forEach(key => {
+        const audio = audioFiles[key];
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }).catch(() => {});
+      });
+      isAudioUnlocked = true;
+      document.removeEventListener('touchstart', unlockAudio);
+      document.removeEventListener('click', unlockAudio);
+    }
+
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+
+    // دالة تشغيل الصوت
     function playSound(key) {
-      if (audioFiles[key]) {
-        audioFiles[key].currentTime = 0;
-        audioFiles[key].play().catch(e => console.log('Audio playback error:', e));
+      const audio = audioFiles[key];
+      if (audio) {
+        audio.currentTime = 0;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error('Audio playback error:', error);
+          });
+        }
       }
     }
 
@@ -144,7 +181,7 @@
     function checkParentGate() {
       const userAnswer = parseInt(document.getElementById('gateAnswer').value);
       if (userAnswer === correctAnswer) {
-        alert('تم التحقق بنجاح! يمكنك الآن التحكم في الإعدادات.');
+        alert('تم التحقق بنجاح!');
         closeParentGate();
       } else {
         alert('إجابة خاطئة، حاول مرة أخرى.');
@@ -156,7 +193,7 @@
       document.getElementById('parentGateModal').style.display = 'none';
     }
 
-    // تسجيل الـ Service Worker لعمل التطبيق بدون إنترنت
+    // تسجيل الـ Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
         .then(() => console.log('Service Worker Registered'))
