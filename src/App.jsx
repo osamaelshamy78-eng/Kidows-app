@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import HomeScreen from './components/HomeScreen.jsx'
 import AdhkarScreen from './components/AdhkarScreen.jsx'
 import StoriesListScreen from './components/StoriesListScreen.jsx'
@@ -19,6 +19,41 @@ export default function App() {
     if (saved) setStars(Number(saved))
   }, [])
 
+  // --- Navigation history wiring -------------------------------------
+  // Every screen change pushes a browser history entry, so the phone's
+  // hardware/gesture back button pops back one screen at a time instead
+  // of closing the app immediately. Only when the user is already on
+  // "home" (the base entry) does back exit the app, which matches how
+  // Karaji behaves.
+  useEffect(() => {
+    window.history.replaceState({ screen: 'home', extra: null }, '', '#home')
+
+    function handlePopState(event) {
+      const state = event.state
+      if (state && state.screen) {
+        setScreen(state.screen)
+        setActiveStory(state.extra || null)
+      } else {
+        setScreen('home')
+        setActiveStory(null)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  const navigate = useCallback((nextScreen, extra = null) => {
+    setScreen(nextScreen)
+    if (extra !== null) setActiveStory(extra)
+    const hash = extra ? `${nextScreen}/${extra}` : nextScreen
+    window.history.pushState({ screen: nextScreen, extra }, '', `#${hash}`)
+  }, [])
+
+  const goBack = useCallback(() => {
+    window.history.back()
+  }, [])
+
   function addStar() {
     const next = stars + 1
     setStars(next)
@@ -30,7 +65,7 @@ export default function App() {
       <AdhkarScreen
         type="morning"
         items={morningAdhkar}
-        onBack={() => setScreen('home')}
+        onBack={goBack}
         onComplete={addStar}
       />
     )
@@ -41,7 +76,7 @@ export default function App() {
       <AdhkarScreen
         type="evening"
         items={eveningAdhkar}
-        onBack={() => setScreen('home')}
+        onBack={goBack}
         onComplete={addStar}
       />
     )
@@ -50,11 +85,8 @@ export default function App() {
   if (screen === 'stories') {
     return (
       <StoriesListScreen
-        onSelect={(id) => {
-          setActiveStory(id)
-          setScreen('story')
-        }}
-        onBack={() => setScreen('home')}
+        onSelect={(id) => navigate('story', id)}
+        onBack={goBack}
       />
     )
   }
@@ -63,7 +95,7 @@ export default function App() {
     return (
       <StoryScreen
         storyId={activeStory}
-        onBack={() => setScreen('stories')}
+        onBack={goBack}
         onComplete={addStar}
       />
     )
@@ -72,28 +104,23 @@ export default function App() {
   if (screen === 'prayerHub') {
     return (
       <PrayerHubScreen
-        onSelect={(next) => setScreen(next)}
-        onBack={() => setScreen('home')}
+        onSelect={(next) => navigate(next)}
+        onBack={goBack}
       />
     )
   }
 
   if (screen === 'wudu') {
-    return (
-      <WuduScreen
-        onBack={() => setScreen('prayerHub')}
-        onComplete={addStar}
-      />
-    )
+    return <WuduScreen onBack={goBack} onComplete={addStar} />
   }
 
   if (screen === 'prayers') {
-    return <PrayersScreen onBack={() => setScreen('prayerHub')} />
+    return <PrayersScreen onBack={goBack} />
   }
 
   if (screen === 'baby') {
-    return <BabyModeScreen onBack={() => setScreen('home')} />
+    return <BabyModeScreen onBack={goBack} />
   }
 
-  return <HomeScreen onSelect={setScreen} stars={stars} />
+  return <HomeScreen onSelect={(next) => navigate(next)} stars={stars} />
 }
