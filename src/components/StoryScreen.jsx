@@ -3,6 +3,7 @@ import { stories } from '../data/stories.js'
 import { extraStories } from '../data/stories_extra.js'
 import { companionStories } from '../data/companions_extra.js'
 import { storyTranslationsEn } from '../data/i18n.js'
+import { companionTranslationsEn } from '../data/companions_i18n.js'
 import { playText, stopAudio } from '../utils/audio.js'
 
 export default function StoryScreen({ storyId, lang = 'ar', onBack, onComplete }) {
@@ -18,7 +19,7 @@ export default function StoryScreen({ storyId, lang = 'ar', onBack, onComplete }
 
   const isLast = page === story.pages.length - 1
   const current = story.pages[page]
-  const translation = storyTranslationsEn[story.id]
+  const translation = storyTranslationsEn[story.id] || companionTranslationsEn[story.id]
   const currentText = isEn ? (translation?.pages?.[page] || current.text) : current.text
   const storyTitle = isEn ? (translation?.title || story.title) : story.title
 
