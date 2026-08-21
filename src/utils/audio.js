@@ -1,14 +1,3 @@
-// Audio helper with three tiers, tried in order:
-// 1. A real recording (item.audio path) - best quality, use once you have
-//    professionally recorded mp3 files.
-// 2. Cloud TTS via /api/tts (ElevenLabs) - much more natural than browser
-//    TTS, needs ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID set as Vercel env
-//    vars (see api/tts.js). Results are cached in-memory per session so the
-//    same line isn't re-requested every tap.
-// 3. Browser text-to-speech (Web Speech API) - free, works with zero setup,
-//    but sounds robotic. Used only if the cloud call fails or isn't
-//    configured yet (e.g. during local `npm run dev` without `vercel dev`).
-
 let currentAudioEl = null
 const cloudAudioCache = new Map()
 
@@ -22,25 +11,23 @@ export function stopAudio() {
   }
 }
 
-function speakWithTTS(text) {
+function speakWithTTS(text, lang = 'ar') {
   if (typeof window === 'undefined' || !window.speechSynthesis) return
   window.speechSynthesis.cancel()
   const utterance = new SpeechSynthesisUtterance(text)
-  utterance.lang = 'ar-SA'
+  utterance.lang = lang === 'en' ? 'en-US' : 'ar-SA'
   utterance.rate = 0.85
   utterance.pitch = 1
-
   const voices = window.speechSynthesis.getVoices()
-  const arabicVoice = voices.find((v) => v.lang && v.lang.startsWith('ar'))
-  if (arabicVoice) utterance.voice = arabicVoice
-
+  const targetVoice = voices.find((v) => v.lang && v.lang.toLowerCase().startsWith(lang === 'en' ? 'en' : 'ar'))
+  if (targetVoice) utterance.voice = targetVoice
   window.speechSynthesis.speak(utterance)
 }
 
-async function playCloudTTS(text) {
-  if (cloudAudioCache.has(text)) {
-    const url = cloudAudioCache.get(text)
-    const el = new Audio(url)
+async function playCloudTTS(text, lang = 'ar') {
+  const cacheKey = `${lang}:${text}`
+  if (cloudAudioCache.has(cacheKey)) {
+    const el = new Audio(cloudAudioCache.get(cacheKey))
     currentAudioEl = el
     await el.play()
     return
@@ -49,37 +36,37 @@ async function playCloudTTS(text) {
   const response = await fetch('/api/tts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text })
+    body: JSON.stringify({ text, lang })
   })
 
-  if (!response.ok) {
-    throw new Error('cloud tts unavailable')
-  }
+  if (!response.ok) throw new Error('cloud tts unavailable')
 
   const blob = await response.blob()
   const url = URL.createObjectURL(blob)
-  cloudAudioCache.set(text, url)
-
+  cloudAudioCache.set(cacheKey, url)
   const el = new Audio(url)
   currentAudioEl = el
   await el.play()
 }
 
-export async function playItem(item) {
+export async function playText(text, lang = 'ar') {
   stopAudio()
+  try {
+    await playCloudTTS(text, lang)
+  } catch {
+    speakWithTTS(text, lang)
+  }
+}
 
-  if (item.audio) {
+export async function playItem(item, lang = 'ar') {
+  stopAudio()
+  if (lang === 'ar' && item.audio) {
     const el = new Audio(item.audio)
     currentAudioEl = el
-    el.play().catch(() => playCloudTTS(item.text).catch(() => speakWithTTS(item.text)))
+    el.play().catch(() => playCloudTTS(item.text, 'ar').catch(() => speakWithTTS(item.text, 'ar')))
     return
   }
-
-  try {
-    await playCloudTTS(item.text)
-  } catch {
-    speakWithTTS(item.text)
-  }
+  await playText(item.text, lang)
 }
 
 export function hasSpeechSupport() {
