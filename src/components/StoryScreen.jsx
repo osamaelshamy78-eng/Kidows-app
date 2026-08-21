@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { stories } from '../data/stories.js'
 import { extraStories } from '../data/stories_extra.js'
+import { companionStories } from '../data/companions_extra.js'
 import { storyTranslationsEn } from '../data/i18n.js'
 import { playText, stopAudio } from '../utils/audio.js'
 
 export default function StoryScreen({ storyId, lang = 'ar', onBack, onComplete }) {
-  const allStories = [...stories, ...extraStories]
+  const allStories = [...stories, ...extraStories, ...companionStories]
   const story = allStories.find((s) => s.id === storyId)
   const [page, setPage] = useState(0)
   const [done, setDone] = useState(false)
