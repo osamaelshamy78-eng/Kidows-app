@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react'
 import { stories } from '../data/stories.js'
+import { extraStories } from '../data/stories_extra.js'
 import { storyTranslationsEn } from '../data/i18n.js'
 import { playText, stopAudio } from '../utils/audio.js'
 
 export default function StoryScreen({ storyId, lang = 'ar', onBack, onComplete }) {
-  const story = stories.find((s) => s.id === storyId)
+  const allStories = [...stories, ...extraStories]
+  const story = allStories.find((s) => s.id === storyId)
   const [page, setPage] = useState(0)
   const [done, setDone] = useState(false)
   const isEn = lang === 'en'
 
   useEffect(() => () => stopAudio(), [])
 
+  if (!story) {
+    return null
+  }
+
   const isLast = page === story.pages.length - 1
   const current = story.pages[page]
-  const currentText = isEn ? storyTranslationsEn[story.id].pages[page] : current.text
-  const storyTitle = isEn ? storyTranslationsEn[story.id].title : story.title
+  const translation = storyTranslationsEn[story.id]
+  const currentText = isEn ? (translation?.pages?.[page] || current.text) : current.text
+  const storyTitle = isEn ? (translation?.title || story.title) : story.title
 
   function handleBack() {
     stopAudio()
