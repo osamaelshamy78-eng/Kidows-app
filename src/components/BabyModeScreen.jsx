@@ -13,7 +13,7 @@ export default function BabyModeScreen({ lang = 'ar', onBack }) {
   useEffect(() => {
     const t = setTimeout(() => {
       if (!hasPlayedFirst.current) {
-        playText(localized.text, lang)
+        playText(isEn ? localized.audioText : localized.text, lang)
         hasPlayedFirst.current = true
       }
     }, 600)
@@ -27,7 +27,7 @@ export default function BabyModeScreen({ lang = 'ar', onBack }) {
     setCurrent(next)
     setPop(true)
     const nextLocalized = isEn ? babyTranslationsEn[next.id] : { text: next.text }
-    playText(nextLocalized.text, lang)
+    playText(isEn ? nextLocalized.audioText : nextLocalized.text, lang)
     setTimeout(() => setPop(false), 400)
   }
 

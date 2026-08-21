@@ -148,14 +148,14 @@ export const prayerTranslationsEn = {
 }
 
 export const babyTranslationsEn = {
-  b1: { label: 'Sun', text: 'Allah created the sun' },
-  b2: { label: 'Moon', text: 'Allah created the moon' },
-  b3: { label: 'Cat', text: 'Allah created the cat' },
-  b4: { label: 'Flower', text: 'Allah created the flower' },
-  b5: { label: 'Bird', text: 'Allah created the bird' },
-  b6: { label: 'Water', text: 'Allah created water' },
-  b7: { label: 'Tree', text: 'Allah created the tree' },
-  b8: { label: 'Star', text: 'Allah created the star' },
-  b9: { label: 'Fish', text: 'Allah created the fish' },
-  b10: { label: 'Apple', text: 'Allah created the apple' }
+  b1: { label: 'Sun', text: 'Allah created the sun', audioText: 'Allah... created the sun.' },
+  b2: { label: 'Moon', text: 'Allah created the moon', audioText: 'Allah... created the moon.' },
+  b3: { label: 'Cat', text: 'Allah created the cat', audioText: 'Allah... created the cat.' },
+  b4: { label: 'Flower', text: 'Allah created the flower', audioText: 'Allah... created the flower.' },
+  b5: { label: 'Bird', text: 'Allah created the bird', audioText: 'Allah... created the bird.' },
+  b6: { label: 'Water', text: 'Allah created water', audioText: 'Allah... created water.' },
+  b7: { label: 'Tree', text: 'Allah created the tree', audioText: 'Allah... created the tree.' },
+  b8: { label: 'Star', text: 'Allah created the star', audioText: 'Allah... created the star.' },
+  b9: { label: 'Fish', text: 'Allah created the fish', audioText: 'Allah... created the fish.' },
+  b10: { label: 'Apple', text: 'Allah created the apple', audioText: 'Allah... created the apple.' }
 }
