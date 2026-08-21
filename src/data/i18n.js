@@ -125,6 +125,48 @@ export const storyTranslationsEn = {
       'Even when people were unkind to him, he ﷺ stayed patient and forgave them.',
       'Prophet Muhammad ﷺ taught us to be honest, kind, and caring.'
     ]
+  },
+  adam: {
+    title: 'Prophet Adam and the Garden',
+    pages: [
+      'Allah created Prophet Adam and taught him the names of things.',
+      'Allah placed Adam and his wife in the Garden and taught them to obey Him.',
+      'Satan whispered to them, and they ate from the tree Allah had forbidden them to approach.',
+      'Adam and his wife regretted what happened and asked Allah for forgiveness, and Allah accepted their repentance.',
+      'We learn from Adam to return to Allah and ask for forgiveness when we make a mistake.'
+    ]
+  },
+  musa: {
+    title: 'Prophet Musa and the Sea',
+    pages: [
+      'Prophet Musa was a messenger of Allah who was sent to guide Pharaoh and his people.',
+      'Musa left with the Children of Israel, and Pharaoh and his soldiers followed them.',
+      'The sea was in front of them, and Pharaoh’s army was behind them.',
+      'Musa trusted Allah, and Allah commanded him to strike the sea with his staff.',
+      'The sea opened, Musa and the Children of Israel crossed safely, and Pharaoh and his soldiers were drowned.',
+      'We learn to trust Allah even when a problem looks impossible.'
+    ]
+  },
+  dawud: {
+    title: 'Prophet Dawud and Jalut',
+    pages: [
+      'Prophet Dawud was a young believer, and Allah gave him strength and wisdom.',
+      'Jalut was a powerful man whom many people feared.',
+      'Dawud stood before Jalut and trusted Allah instead of relying only on his own strength.',
+      'Dawud defeated Jalut by Allah’s permission.',
+      'After that, Allah gave Dawud kingship and wisdom.',
+      'We learn that courage, faith, and trust in Allah are stronger than fear.'
+    ]
+  },
+  sulayman: {
+    title: 'Prophet Sulayman and the Ant',
+    pages: [
+      'Prophet Sulayman was a prophet and a king, and Allah gave him many blessings.',
+      'Allah taught Sulayman to understand the speech of some creatures.',
+      'Sulayman and his army passed through a valley, and he heard an ant warning the other ants so they would not be harmed.',
+      'Sulayman smiled at what he heard and thanked Allah for His blessings.',
+      'We learn to thank Allah for His blessings and to be gentle with every creature.'
+    ]
   }
 }
 
