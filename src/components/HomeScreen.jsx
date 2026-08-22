@@ -56,10 +56,10 @@ export default function HomeScreen({ lang, onToggleLanguage, onSelect, stars }) 
         </button>
       </div>
 
-      <p className="font-body text-sm text-ink/50 mt-4">{isEn ? 'With Mom or Dad 💛' : 'مع بابا أو ماما 💛'}</p>
+      <p className="font-body text-sm text-ink/50 mt-4">{isEn ? 'With Mom or Dad 💛' : 'مع الأب أو الأم 💛'}</p>
 
       <button onClick={() => onSelect('baby')} className="mt-2 font-body text-sm text-teal-dark/70 underline underline-offset-2">
-        👶 {isEn ? 'Simple Baby Mode (1+)' : 'وضع أبسط للرضّع من عمر سنة'}
+        👶 {isEn ? 'Simple Baby Mode (1+)' : 'وضع مبسّط للرضّع من عمر سنة'}
       </button>
     </div>
   )
