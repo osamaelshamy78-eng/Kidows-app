@@ -9,7 +9,7 @@ export const babyItems = [
   { id: 'b3', emoji: '🐱', label: 'القطة', text: 'الله خلق القطة', color: '#E8A33D' },
   { id: 'b4', emoji: '🌸', label: 'الزهرة', text: 'الله خلق الزهرة', color: '#B5573A' },
   { id: 'b5', emoji: '🐦', label: 'العصفور', text: 'الله خلق العصفور', color: '#5A9B9B' },
-  { id: 'b6', emoji: '💧', label: 'الميه', text: 'الله خلق الميه', color: '#2A6F6F' },
+  { id: 'b6', emoji: '💧', label: 'الماء', text: 'الله خلق الماء', color: '#2A6F6F' },
   { id: 'b7', emoji: '🌳', label: 'الشجرة', text: 'الله خلق الشجرة', color: '#3E7D5C' },
   { id: 'b8', emoji: '⭐', label: 'النجمة', text: 'الله خلق النجمة', color: '#E8A33D' },
   { id: 'b9', emoji: '🐟', label: 'السمكة', text: 'الله خلق السمكة', color: '#5A9B9B' },
