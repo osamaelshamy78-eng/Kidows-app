@@ -2,15 +2,9 @@
 // Calls ElevenLabs text-to-speech and streams back an mp3.
 // The API key stays server-side (set as a Vercel env var) — never expose
 // it in frontend code.
-//
-// Setup:
-// 1. Create an ElevenLabs account, grab an API key
-// 2. Pick a voice (Arabic works best with the "multilingual" model) and
-//    copy its voice ID from the ElevenLabs voice library
-// 3. In Vercel: Project Settings -> Environment Variables, add:
-//    ELEVENLABS_API_KEY = <your key>
-//    ELEVENLABS_VOICE_ID = <chosen voice id>
-// 4. Redeploy
+// Arabic narration uses the Haytham voice selected for warm, clear storytelling.
+
+const ARABIC_VOICE_ID = 'IES4nrmZdUBHByLBde0P'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -25,9 +19,9 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.ELEVENLABS_API_KEY
-  const voiceId = process.env.ELEVENLABS_VOICE_ID
+  const voiceId = ARABIC_VOICE_ID
 
-  if (!apiKey || !voiceId) {
+  if (!apiKey) {
     res.status(501).json({ error: 'TTS not configured yet' })
     return
   }
@@ -44,7 +38,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           text,
           model_id: 'eleven_multilingual_v2',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+          voice_settings: { stability: 0.65, similarity_boost: 0.8 }
         })
       }
     )
