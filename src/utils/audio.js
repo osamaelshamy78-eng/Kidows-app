@@ -18,8 +18,14 @@ function speakWithTTS(text, lang = 'ar') {
   utterance.lang = lang === 'en' ? 'en-US' : 'ar-SA'
   utterance.rate = 0.85
   utterance.pitch = 1
+
   const voices = window.speechSynthesis.getVoices()
-  const targetVoice = voices.find((v) => v.lang && v.lang.toLowerCase().startsWith(lang === 'en' ? 'en' : 'ar'))
+  const targetVoice = lang === 'en'
+    ? voices.find((v) => v.lang?.toLowerCase().startsWith('en'))
+    : voices.find((v) => v.lang?.toLowerCase() === 'ar-sa')
+      || voices.find((v) => v.lang?.toLowerCase() === 'ar-ae')
+      || voices.find((v) => v.lang?.toLowerCase().startsWith('ar'))
+
   if (targetVoice) utterance.voice = targetVoice
   window.speechSynthesis.speak(utterance)
 }
@@ -51,6 +57,14 @@ async function playCloudTTS(text, lang = 'ar') {
 
 export async function playText(text, lang = 'ar') {
   stopAudio()
+
+  // Arabic narration uses the device's Modern Standard Arabic voice
+  // so regional/dialect voices from the cloud provider are not used.
+  if (lang === 'ar') {
+    speakWithTTS(text, 'ar')
+    return
+  }
+
   try {
     await playCloudTTS(text, lang)
   } catch {
@@ -63,7 +77,7 @@ export async function playItem(item, lang = 'ar') {
   if (lang === 'ar' && item.audio) {
     const el = new Audio(item.audio)
     currentAudioEl = el
-    el.play().catch(() => playCloudTTS(item.text, 'ar').catch(() => speakWithTTS(item.text, 'ar')))
+    el.play().catch(() => speakWithTTS(item.text, 'ar'))
     return
   }
   await playText(item.text, lang)
