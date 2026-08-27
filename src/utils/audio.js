@@ -14,10 +14,12 @@ export function stopAudio() {
 
 // Some Android browsers (Samsung Internet in particular) return an empty
 // voice list on the very first call because voices load asynchronously.
-// This just nudges the browser to load them ahead of time and caches the
-// result — it never blocks an actual speak() call, because on iOS/Safari
-// speak() MUST be invoked synchronously inside the user-gesture call stack;
-// any `await` in front of it silently breaks it there.
+// This just nudges the browser to start loading them ahead of time — it
+// does NOT call speak() here. An earlier version tried to also "warm up"
+// the engine with a silent/near-empty utterance, but some Android TTS
+// engines get stuck in a bad state after receiving an empty-ish utterance,
+// which silenced all speech afterward. Not worth the risk for a minor
+// latency improvement.
 export function warmUpVoices() {
   if (voicesWarmed || typeof window === 'undefined' || !window.speechSynthesis) return
   voicesWarmed = true
@@ -25,17 +27,6 @@ export function warmUpVoices() {
   if (synth.getVoices().length === 0) {
     synth.onvoiceschanged = () => synth.getVoices()
     synth.getVoices()
-  }
-  // Many Android TTS engines have a noticeable "cold start" delay the very
-  // first time speak() is called after the page loads. Nudging it early
-  // with a near-silent utterance means the real first phrase plays without
-  // that lag.
-  try {
-    const primer = new SpeechSynthesisUtterance(' ')
-    primer.volume = 0
-    synth.speak(primer)
-  } catch {
-    // Some engines reject empty/near-empty text — harmless to skip.
   }
 }
 
