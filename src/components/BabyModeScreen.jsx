@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { babyItems } from '../data/babyItems.js'
 import { babyTranslationsEn } from '../data/i18n.js'
-import { playText, stopAudio } from '../utils/audio.js'
+import { playText, stopAudio, warmUpVoices } from '../utils/audio.js'
 
 export default function BabyModeScreen({ lang = 'ar', onBack }) {
   const [current, setCurrent] = useState(babyItems[0])
@@ -11,6 +11,7 @@ export default function BabyModeScreen({ lang = 'ar', onBack }) {
   const localized = isEn ? babyTranslationsEn[current.id] : { label: current.label, text: current.text }
 
   useEffect(() => {
+    warmUpVoices()
     const t = setTimeout(() => {
       if (!hasPlayedFirst.current) {
         playText(isEn ? localized.audioText : localized.text, lang)
