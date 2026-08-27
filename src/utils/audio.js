@@ -1,5 +1,6 @@
 let currentAudioEl = null
 const cloudAudioCache = new Map()
+let voicesWarmed = false
 
 export function stopAudio() {
   if (currentAudioEl) {
@@ -13,55 +14,49 @@ export function stopAudio() {
 
 // Some Android browsers (Samsung Internet in particular) return an empty
 // voice list on the very first call because voices load asynchronously.
-// Wait briefly for `voiceschanged` before giving up, instead of assuming
-// "no voices" means "definitely no voices".
-function getVoicesAsync() {
-  return new Promise((resolve) => {
-    const existing = window.speechSynthesis.getVoices()
-    if (existing.length > 0) {
-      resolve(existing)
-      return
+// This just nudges the browser to load them ahead of time and caches the
+// result — it never blocks an actual speak() call, because on iOS/Safari
+// speak() MUST be invoked synchronously inside the user-gesture call stack;
+// any `await` in front of it silently breaks it there.
+export function warmUpVoices() {
+  if (voicesWarmed || typeof window === 'undefined' || !window.speechSynthesis) return
+  voicesWarmed = true
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices()
     }
-    let settled = false
-    const finish = (voices) => {
-      if (settled) return
-      settled = true
-      resolve(voices)
-    }
-    window.speechSynthesis.onvoiceschanged = () => finish(window.speechSynthesis.getVoices())
-    // Fallback timeout in case the event never fires on this device/browser.
-    setTimeout(() => finish(window.speechSynthesis.getVoices()), 800)
-  })
+    // Some engines only populate the list after being asked once.
+    window.speechSynthesis.getVoices()
+  }
 }
 
-// Returns true if it actually found a voice and asked it to speak,
-// false if no matching voice exists on this device (so the caller can
-// fall back to cloud TTS instead of failing silently).
-async function speakWithTTS(text, lang = 'ar') {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return false
-  window.speechSynthesis.cancel()
-
-  const voices = await getVoicesAsync()
-  const targetVoice = lang === 'en'
+function pickVoice(voices, lang) {
+  return lang === 'en'
     ? voices.find((v) => v.lang?.toLowerCase().startsWith('en'))
     : voices.find((v) => v.lang?.toLowerCase() === 'ar-sa')
       || voices.find((v) => v.lang?.toLowerCase() === 'ar-ae')
       || voices.find((v) => v.lang?.toLowerCase().startsWith('ar'))
+}
 
-  // No matching voice installed on this device at all — speak() would
-  // either silently do nothing or throw depending on the browser.
+// Speaks synchronously (required for iOS/Safari to accept it as part of the
+// user gesture). Returns true if a matching voice was found and speak() was
+// called, false if no matching voice exists on this device at all — the
+// caller can then fall back to cloud TTS.
+function speakWithTTS(text, lang = 'ar') {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return false
+  window.speechSynthesis.cancel()
+
+  const voices = window.speechSynthesis.getVoices()
+  const targetVoice = pickVoice(voices, lang)
   if (!targetVoice) return false
 
-  return new Promise((resolve) => {
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = lang === 'en' ? 'en-US' : 'ar-SA'
-    utterance.rate = 0.85
-    utterance.pitch = 1
-    utterance.voice = targetVoice
-    utterance.onend = () => resolve(true)
-    utterance.onerror = () => resolve(false)
-    window.speechSynthesis.speak(utterance)
-  })
+  const utterance = new SpeechSynthesisUtterance(text)
+  utterance.lang = lang === 'en' ? 'en-US' : 'ar-SA'
+  utterance.rate = 0.85
+  utterance.pitch = 1
+  utterance.voice = targetVoice
+  window.speechSynthesis.speak(utterance)
+  return true
 }
 
 async function playCloudTTS(text, lang = 'ar') {
@@ -93,12 +88,11 @@ export async function playText(text, lang = 'ar') {
   stopAudio()
 
   // Arabic narration prefers the device's Modern Standard Arabic voice
-  // (avoids regional/dialect cloud voices). But many Android tablets
-  // (Samsung especially) ship with no Arabic TTS voice installed at all,
-  // so if the device can't speak it, fall back to the cloud voice instead
-  // of failing silently.
+  // (avoids regional/dialect cloud voices). speakWithTTS() must run
+  // synchronously (see comment above) — if no Arabic voice exists on this
+  // device at all, only then do we fall back to the cloud voice.
   if (lang === 'ar') {
-    const spoke = await speakWithTTS(text, 'ar')
+    const spoke = speakWithTTS(text, 'ar')
     if (!spoke) {
       try {
         await playCloudTTS(text, 'ar')
