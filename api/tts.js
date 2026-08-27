@@ -45,6 +45,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errText = await response.text()
+      console.error('ElevenLabs TTS error', response.status, errText)
       res.status(502).json({ error: 'TTS provider error', detail: errText })
       return
     }
