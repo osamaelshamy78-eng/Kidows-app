@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import HomeScreen from './components/HomeScreen.jsx'
 import AdhkarScreen from './components/AdhkarScreen.jsx'
 import StoriesListScreen from './components/StoriesListScreen.jsx'
@@ -16,6 +16,8 @@ export default function App() {
   const [activeStory, setActiveStory] = useState(null)
   const [stars, setStars] = useState(0)
   const [lang, setLang] = useState(() => localStorage.getItem('kidows_lang') || 'ar')
+  const screenRef = useRef(screen)
+  screenRef.current = screen
 
   useEffect(() => {
     const saved = localStorage.getItem('stars')
@@ -33,6 +35,14 @@ export default function App() {
   useEffect(() => {
     window.history.replaceState({ screen: 'home', extra: null }, '', '#home')
     function handlePopState(event) {
+      // Baby mode traps the hardware/gesture back button: re-push the same
+      // state instead of navigating away. The only way out is the explicit
+      // ⏎ button inside BabyModeScreen, which uses navigate() (pushState),
+      // not history.back(), so it's unaffected by this trap.
+      if (screenRef.current === 'baby') {
+        window.history.pushState({ screen: 'baby', extra: null }, '', '#baby')
+        return
+      }
       const state = event.state
       if (state && state.screen) {
         setScreen(state.screen)
@@ -46,7 +56,22 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
+  // Toggle a body class so index.css can scope pull-to-refresh prevention
+  // to baby mode only, without affecting scroll/refresh on other screens.
+  useEffect(() => {
+    document.body.classList.toggle('baby-mode-lock', screen === 'baby')
+    return () => document.body.classList.remove('baby-mode-lock')
+  }, [screen])
+
   const navigate = useCallback((nextScreen, extra = null) => {
+    // Fired synchronously inside the click handler (not in a useEffect
+    // after render) so it still counts as "triggered by a user gesture" —
+    // some browsers reject requestFullscreen() otherwise.
+    if (nextScreen === 'baby') {
+      document.documentElement.requestFullscreen?.().catch(() => {})
+    } else if (screenRef.current === 'baby' && document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {})
+    }
     setScreen(nextScreen)
     if (extra !== null) setActiveStory(extra)
     const hash = extra ? `${nextScreen}/${extra}` : nextScreen
@@ -70,7 +95,9 @@ export default function App() {
   if (screen === 'prayers') return <PrayersScreen lang={lang} onBack={goBack} />
   if (screen === 'quiz') return <QuizScreen lang={lang} onBack={goBack} onCorrect={addStar} />
   if (screen === 'games') return <GamesScreen lang={lang} onBack={goBack} onComplete={addStar} />
-  if (screen === 'baby') return <BabyModeScreen lang={lang} onBack={goBack} />
+  // Uses navigate() (pushState) instead of goBack() (history.back()) so the
+  // explicit exit button always works even though popstate is trapped above.
+  if (screen === 'baby') return <BabyModeScreen lang={lang} onBack={() => navigate('home')} />
 
   return <HomeScreen lang={lang} onToggleLanguage={toggleLanguage} onSelect={(next) => navigate(next)} stars={stars} />
 }

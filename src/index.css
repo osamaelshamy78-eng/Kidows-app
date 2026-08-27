@@ -7,6 +7,14 @@ html, body, #root {
   overscroll-behavior-y: auto;
 }
 
+/* Applied to <body> only while baby mode is active (toggled from App.jsx).
+   Prevents the mobile browser's pull-to-refresh/bounce gesture there,
+   without affecting normal scroll/refresh behavior on the rest of the app. */
+body.baby-mode-lock,
+body.baby-mode-lock #root {
+  overscroll-behavior-y: none;
+}
+
 body {
   font-family: 'Tajawal', sans-serif;
   -webkit-tap-highlight-color: transparent;
