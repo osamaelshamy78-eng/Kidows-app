@@ -1,14 +1,14 @@
-// Device-only text-to-speech. No cloud/network dependency: everything here
-// relies purely on the browser's built-in speechSynthesis engine. On a
-// device with no Arabic voice installed, Arabic narration simply won't
-// play — there is no cloud fallback by design (kept intentionally simple).
+// Reliable browser/device text-to-speech for Kidows.
+// The previous implementation failed when Android/iOS had not finished
+// loading its voice list: getVoices() returned [] and playback silently stopped.
 
 let currentAudioEl = null
-let voicesWarmed = false
+let voicesReadyPromise = null
 
 export function stopAudio() {
   if (currentAudioEl) {
     currentAudioEl.pause()
+    currentAudioEl.currentTime = 0
     currentAudioEl = null
   }
   if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -16,64 +16,101 @@ export function stopAudio() {
   }
 }
 
-// Some Android browsers (Samsung Internet in particular) return an empty
-// voice list on the very first call because voices load asynchronously.
-// This just nudges the browser to start loading them ahead of time — it
-// does NOT call speak() here (an earlier attempt to "warm up" the engine
-// with a silent utterance caused some Android TTS engines to get stuck
-// and go silent afterward).
-export function warmUpVoices() {
-  if (voicesWarmed || typeof window === 'undefined' || !window.speechSynthesis) return
-  voicesWarmed = true
-  const synth = window.speechSynthesis
-  if (synth.getVoices().length === 0) {
-    synth.onvoiceschanged = () => synth.getVoices()
-    synth.getVoices()
+function getVoicesWhenReady() {
+  if (typeof window === 'undefined' || !window.speechSynthesis) {
+    return Promise.resolve([])
   }
+
+  const synth = window.speechSynthesis
+  const existing = synth.getVoices()
+  if (existing.length) return Promise.resolve(existing)
+
+  if (!voicesReadyPromise) {
+    voicesReadyPromise = new Promise((resolve) => {
+      let settled = false
+      const finish = () => {
+        if (settled) return
+        const voices = synth.getVoices()
+        if (voices.length) {
+          settled = true
+          synth.removeEventListener?.('voiceschanged', finish)
+          resolve(voices)
+        }
+      }
+
+      synth.addEventListener?.('voiceschanged', finish)
+      // Trigger voice loading on browsers that need an initial getVoices().
+      synth.getVoices()
+
+      // Fallback for browsers that do not fire voiceschanged reliably.
+      setTimeout(() => {
+        const voices = synth.getVoices()
+        if (!settled) {
+          settled = true
+          synth.removeEventListener?.('voiceschanged', finish)
+          resolve(voices)
+        }
+      }, 1200)
+    })
+  }
+
+  return voicesReadyPromise
 }
 
 function pickVoice(voices, lang) {
-  return lang === 'en'
-    ? voices.find((v) => v.lang?.toLowerCase().startsWith('en'))
-    : voices.find((v) => v.lang?.toLowerCase() === 'ar-sa')
-      || voices.find((v) => v.lang?.toLowerCase() === 'ar-ae')
-      || voices.find((v) => v.lang?.toLowerCase().startsWith('ar'))
+  if (lang === 'en') {
+    return voices.find((v) => v.lang?.toLowerCase() === 'en-us')
+      || voices.find((v) => v.lang?.toLowerCase().startsWith('en'))
+  }
+
+  return voices.find((v) => v.lang?.toLowerCase() === 'ar-sa')
+    || voices.find((v) => v.lang?.toLowerCase() === 'ar-ae')
+    || voices.find((v) => v.lang?.toLowerCase() === 'ar-eg')
+    || voices.find((v) => v.lang?.toLowerCase().startsWith('ar'))
 }
 
-// Speaks synchronously (required for iOS/Safari to accept it as part of the
-// user gesture). Returns true if a matching voice was found and speak() was
-// called, false if no matching voice exists on this device at all.
-function speakWithTTS(text, lang = 'ar') {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return false
-  window.speechSynthesis.cancel()
+function speakWithTTS(text, lang, voices) {
+  if (typeof window === 'undefined' || !window.speechSynthesis || !text) return false
 
-  const voices = window.speechSynthesis.getVoices()
+  const synth = window.speechSynthesis
+  synth.cancel()
+
   const targetVoice = pickVoice(voices, lang)
-  if (!targetVoice) return false
-
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = lang === 'en' ? 'en-US' : 'ar-SA'
-  utterance.rate = 0.85
+  utterance.rate = lang === 'en' ? 0.9 : 0.85
   utterance.pitch = 1
-  utterance.voice = targetVoice
-  window.speechSynthesis.speak(utterance)
+  if (targetVoice) utterance.voice = targetVoice
+
+  synth.speak(utterance)
   return true
+}
+
+export async function warmUpVoices() {
+  await getVoicesWhenReady()
 }
 
 export async function playText(text, lang = 'ar') {
   stopAudio()
-  speakWithTTS(text, lang)
+  const voices = await getVoicesWhenReady()
+  return speakWithTTS(text, lang, voices)
 }
 
 export async function playItem(item, lang = 'ar') {
   stopAudio()
-  if (lang === 'ar' && item.audio) {
+
+  if (lang === 'ar' && item?.audio) {
     const el = new Audio(item.audio)
     currentAudioEl = el
-    el.play().catch(() => speakWithTTS(item.text, 'ar'))
-    return
+    try {
+      await el.play()
+      return true
+    } catch {
+      currentAudioEl = null
+    }
   }
-  await playText(item.text, lang)
+
+  return playText(item?.text || '', lang)
 }
 
 export function hasSpeechSupport() {
