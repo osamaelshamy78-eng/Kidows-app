@@ -21,12 +21,21 @@ export function stopAudio() {
 export function warmUpVoices() {
   if (voicesWarmed || typeof window === 'undefined' || !window.speechSynthesis) return
   voicesWarmed = true
-  if (window.speechSynthesis.getVoices().length === 0) {
-    window.speechSynthesis.onvoiceschanged = () => {
-      window.speechSynthesis.getVoices()
-    }
-    // Some engines only populate the list after being asked once.
-    window.speechSynthesis.getVoices()
+  const synth = window.speechSynthesis
+  if (synth.getVoices().length === 0) {
+    synth.onvoiceschanged = () => synth.getVoices()
+    synth.getVoices()
+  }
+  // Many Android TTS engines have a noticeable "cold start" delay the very
+  // first time speak() is called after the page loads. Nudging it early
+  // with a near-silent utterance means the real first phrase plays without
+  // that lag.
+  try {
+    const primer = new SpeechSynthesisUtterance(' ')
+    primer.volume = 0
+    synth.speak(primer)
+  } catch {
+    // Some engines reject empty/near-empty text — harmless to skip.
   }
 }
 
