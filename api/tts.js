@@ -4,7 +4,7 @@
 // it in frontend code.
 // Arabic narration uses the Haytham voice selected for warm, clear storytelling.
 
-const ARABIC_VOICE_ID = 'IES4nrmZdUBHByLBde0P'
+const ARABIC_VOICE_ID = 'wxweiHvoC2r2jFM7mS8b'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
