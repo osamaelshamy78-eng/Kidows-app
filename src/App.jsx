@@ -24,6 +24,11 @@ export default function App() {
     if (saved) setStars(Number(saved))
   }, [])
 
+  // App name per language: Kidows in English, روضة الصبيان in Arabic.
+  useEffect(() => {
+    document.title = lang === 'en' ? 'Kidows' : 'روضة الصبيان'
+  }, [lang])
+
   function toggleLanguage() {
     setLang((value) => {
       const next = value === 'ar' ? 'en' : 'ar'
