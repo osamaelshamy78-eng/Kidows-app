@@ -1,4 +1,4 @@
-// Pre-generates narration mp3s for the adhkar and companion stories so they
+// Pre-generates narration mp3s for the adhkar and all stories so they
 // play instantly and offline, without spending ElevenLabs credits at runtime.
 //
 // Usage: node scripts/generate-audio.mjs https://<your-deployment>.vercel.app
@@ -8,6 +8,8 @@
 import { mkdir, writeFile, access } from 'node:fs/promises'
 import { morningAdhkar, eveningAdhkar } from '../src/data/adhkar.js'
 import { companionStories } from '../src/data/companions_extra.js'
+import { stories } from '../src/data/stories.js'
+import { extraStories } from '../src/data/stories_extra.js'
 
 const base = process.argv[2]
 if (!base) {
@@ -19,7 +21,7 @@ if (!base) {
 function prepareText(text) {
   return text
     .replace(/ﷺ/g, ' صلى الله عليه وسلم ')
-    .replace(/[\p{Extended_Pictographic}️‍]/gu, '')
+    .replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, '')
     .replace(/[“”«»"]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
@@ -27,7 +29,8 @@ function prepareText(text) {
 
 const jobs = [
   ...[...morningAdhkar, ...eveningAdhkar].map((item) => ({ file: `public/audio/adhkar/${item.id}.mp3`, text: item.text })),
-  ...companionStories.flatMap((story) => story.pages.map((page, i) => ({ file: `public/audio/companions/${story.id}-${i + 1}.mp3`, text: page.text })))
+  ...companionStories.flatMap((story) => story.pages.map((page, i) => ({ file: `public/audio/companions/${story.id}-${i + 1}.mp3`, text: page.text }))),
+  ...[...stories, ...extraStories].flatMap((story) => story.pages.map((page, i) => ({ file: `public/audio/prophets/${story.id}-${i + 1}.mp3`, text: page.text })))
 ]
 
 const exists = (file) => access(file).then(() => true, () => false)

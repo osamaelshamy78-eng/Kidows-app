@@ -33,7 +33,7 @@ npm run preview
    - محليًا: `vercel dev` بدل `npm run dev` عشان `/api/tts` يشتغل
 3. **صوت الجهاز** — fallback تلقائي، وبيختار أحسن صوت عربي/إنجليزي متاح على الجهاز
 
-**الأذكار وقصص الصحابة متسجلين مسبقًا** في `public/audio/` بصوت "Kidows Narrator (Arabic)" (صوت مصمم في حساب ElevenLabs، ID: `Ks5AwUEEv0IqadH2vOT1`). لو عدّلت نص أو ضفت قصة، امسح ملف الـ mp3 بتاعها وشغّل:
+**الأذكار وكل القصص (الأنبياء والصحابة) متسجلين مسبقًا** في `public/audio/` بصوت "Kidows Narrator (Arabic)" (صوت مصمم في حساب ElevenLabs، ID: `Ks5AwUEEv0IqadH2vOT1`). لو عدّلت نص أو ضفت قصة، امسح ملف الـ mp3 بتاعها وشغّل:
 ```bash
 node scripts/generate-audio.mjs https://<رابط-النشر>.vercel.app
 ```
@@ -55,5 +55,4 @@ node scripts/generate-audio.mjs https://<رابط-النشر>.vercel.app
 ## اللي محتاج شغل بعد كده
 - استبدال الأيقونات بتصميم حقيقي
 - إضافة feature تاني (قصص الأنبياء أو تعليم الوضوء) بنفس نمط AdhkarScreen
-- تسجيل قصص الأنبياء مسبقًا بنفس الطريقة (لسه بتتولد وقت التشغيل)
 - مراجعة نطق وتشكيل الأذكار المسجلة من شيخ أو مدرّس

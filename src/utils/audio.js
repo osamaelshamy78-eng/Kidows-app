@@ -89,7 +89,7 @@ export function stopAudio() {
 function prepareText(text, lang) {
   return String(text || '')
     .replace(/ﷺ/g, lang === 'en' ? ' peace be upon him ' : ' صلى الله عليه وسلم ')
-    .replace(/[\p{Extended_Pictographic}️‍]/gu, '')
+    .replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, '')
     .replace(/[“”«»"]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
