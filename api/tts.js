@@ -53,7 +53,10 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errText = await response.text()
       console.error('ElevenLabs TTS error', response.status, errText)
-      res.status(502).json({ error: 'TTS provider error' })
+      // 401/402/403 = bad key, plan doesn't allow this voice, or quota used up:
+      // retrying won't help, so tell the app to use the device voice for now.
+      const accountProblem = [401, 402, 403].includes(response.status)
+      res.status(accountProblem ? 503 : 502).json({ error: accountProblem ? 'TTS unavailable for this account' : 'TTS provider error' })
       return
     }
 

@@ -117,8 +117,9 @@ async function fetchCloudClip(text, myId) {
     const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}`, { signal: controller.signal })
     const type = res.headers.get('content-type') || ''
     if (!res.ok || !type.startsWith('audio/')) {
-      // 404 = no serverless function here, 501 = no API key: don't retry.
-      if (res.status === 404 || res.status === 501 || (res.ok && !type.startsWith('audio/'))) cloudStatus = 'off'
+      // 404 = no serverless function here, 501 = no API key, 503 = the
+      // ElevenLabs account can't serve this voice: don't retry this session.
+      if ([404, 501, 503].includes(res.status) || (res.ok && !type.startsWith('audio/'))) cloudStatus = 'off'
       return null
     }
     const blob = await res.blob()
