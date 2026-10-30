@@ -7,10 +7,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: ['icons/icon.svg', 'icons/favicon-32.png', 'icons/apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
-        name: 'روضة الصبيان',
-        short_name: 'روضة الصبيان',
+        name: 'نور الصغار',
+        short_name: 'نور الصغار',
         description: 'تطبيق إسلامي تفاعلي للأطفال من عمر سنة',
         lang: 'ar',
         dir: 'rtl',
@@ -33,7 +33,32 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallbackDenylist: [/^\/api\//],
+        // Keep every narrated phrase on the device so replays work offline
+        // and don't cost another ElevenLabs request.
+        runtimeCaching: [
+          {
+            // Pre-recorded narration in public/audio: cache once, play offline.
+            urlPattern: ({ url }) => url.pathname.startsWith('/audio/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'narration',
+              expiration: { maxEntries: 300 },
+              cacheableResponse: { statuses: [200] },
+              rangeRequests: true
+            }
+          },
+          {
+            urlPattern: ({ url }) => url.pathname === '/api/tts',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'tts-audio',
+              expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 90 },
+              cacheableResponse: { statuses: [200] }
+            }
+          }
+        ]
       }
     })
   ]

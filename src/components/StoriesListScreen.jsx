@@ -2,6 +2,7 @@ import { stories } from '../data/stories.js'
 import { extraStories } from '../data/stories_extra.js'
 import { companionStories } from '../data/companions_extra.js'
 import { storyTranslationsEn } from '../data/i18n.js'
+import { companionTranslationsEn } from '../data/companions_i18n.js'
 
 export default function StoriesListScreen({ lang = 'ar', onSelect, onBack }) {
   const isEn = lang === 'en'
@@ -27,7 +28,7 @@ export default function StoriesListScreen({ lang = 'ar', onSelect, onBack }) {
         {companionStories.map((story) => (
           <button key={story.id} onClick={() => onSelect(story.id)} className="w-full bg-white rounded-3xl shadow-md py-5 px-6 flex items-center justify-between active:scale-95 transition-transform">
             <span className="text-5xl">{story.cover}</span>
-            <span className="font-display text-xl text-ink">{isEn ? (storyTranslationsEn[story.id]?.title || story.title) : story.title}</span>
+            <span className="font-display text-xl text-ink">{isEn ? (companionTranslationsEn[story.id]?.title || story.title) : story.title}</span>
           </button>
         ))}
       </div>

@@ -9,6 +9,8 @@ import PrayersScreen from './components/PrayersScreen.jsx'
 import BabyModeScreen from './components/BabyModeScreen.jsx'
 import QuizScreen from './components/QuizScreen.jsx'
 import GamesScreen from './components/GamesScreen.jsx'
+import ParentScreen from './components/ParentScreen.jsx'
+import ParentGate from './components/ParentGate.jsx'
 import { morningAdhkar, eveningAdhkar } from './data/adhkar.js'
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
   const [activeStory, setActiveStory] = useState(null)
   const [stars, setStars] = useState(0)
   const [lang, setLang] = useState(() => localStorage.getItem('kidows_lang') || 'ar')
+  // What the parent gate is protecting right now: 'parents' | 'exitBaby' | null
+  const [gateFor, setGateFor] = useState(null)
   const screenRef = useRef(screen)
   screenRef.current = screen
 
@@ -43,6 +47,7 @@ export default function App() {
         window.history.pushState({ screen: 'baby', extra: null }, '', '#baby')
         return
       }
+      setGateFor(null)
       const state = event.state
       if (state && state.screen) {
         setScreen(state.screen)
@@ -80,24 +85,48 @@ export default function App() {
 
   const goBack = useCallback(() => window.history.back(), [])
 
-  function addStar() {
-    const next = stars + 1
-    setStars(next)
-    localStorage.setItem('stars', String(next))
+  // Functional update: games can award several stars quickly (and from
+  // timeouts), so reading `stars` from the closure would lose some.
+  const addStar = useCallback(() => {
+    setStars((value) => {
+      const next = value + 1
+      localStorage.setItem('stars', String(next))
+      return next
+    })
+  }, [])
+
+  function resetStars() {
+    setStars(0)
+    localStorage.setItem('stars', '0')
   }
 
-  if (screen === 'morning') return <AdhkarScreen type="morning" items={morningAdhkar} lang={lang} onBack={goBack} onComplete={addStar} />
-  if (screen === 'evening') return <AdhkarScreen type="evening" items={eveningAdhkar} lang={lang} onBack={goBack} onComplete={addStar} />
-  if (screen === 'stories') return <StoriesListScreen lang={lang} onSelect={(id) => navigate('story', id)} onBack={goBack} />
-  if (screen === 'story') return <StoryScreen storyId={activeStory} lang={lang} onBack={goBack} onComplete={addStar} />
-  if (screen === 'prayerHub') return <PrayerHubScreen lang={lang} onSelect={(next) => navigate(next)} onBack={goBack} />
-  if (screen === 'wudu') return <WuduScreen lang={lang} onBack={goBack} onComplete={addStar} />
-  if (screen === 'prayers') return <PrayersScreen lang={lang} onBack={goBack} />
-  if (screen === 'quiz') return <QuizScreen lang={lang} onBack={goBack} onCorrect={addStar} />
-  if (screen === 'games') return <GamesScreen lang={lang} onBack={goBack} onComplete={addStar} />
-  // Uses navigate() (pushState) instead of goBack() (history.back()) so the
-  // explicit exit button always works even though popstate is trapped above.
-  if (screen === 'baby') return <BabyModeScreen lang={lang} onBack={() => navigate('home')} />
+  function passGate() {
+    const target = gateFor
+    setGateFor(null)
+    if (target === 'parents') navigate('parents')
+    if (target === 'exitBaby') navigate('home')
+  }
 
-  return <HomeScreen lang={lang} onToggleLanguage={toggleLanguage} onSelect={(next) => navigate(next)} stars={stars} />
+  let content
+  if (screen === 'morning') content = <AdhkarScreen type="morning" items={morningAdhkar} lang={lang} onBack={goBack} onComplete={addStar} />
+  else if (screen === 'evening') content = <AdhkarScreen type="evening" items={eveningAdhkar} lang={lang} onBack={goBack} onComplete={addStar} />
+  else if (screen === 'stories') content = <StoriesListScreen lang={lang} onSelect={(id) => navigate('story', id)} onBack={goBack} />
+  else if (screen === 'story') content = <StoryScreen storyId={activeStory} lang={lang} onBack={goBack} onComplete={addStar} />
+  else if (screen === 'prayerHub') content = <PrayerHubScreen lang={lang} onSelect={(next) => navigate(next)} onBack={goBack} />
+  else if (screen === 'wudu') content = <WuduScreen lang={lang} onBack={goBack} onComplete={addStar} />
+  else if (screen === 'prayers') content = <PrayersScreen lang={lang} onBack={goBack} />
+  else if (screen === 'quiz') content = <QuizScreen lang={lang} onBack={goBack} onCorrect={addStar} />
+  else if (screen === 'games') content = <GamesScreen lang={lang} onBack={goBack} onComplete={addStar} />
+  else if (screen === 'parents') content = <ParentScreen lang={lang} stars={stars} onToggleLanguage={toggleLanguage} onResetStars={resetStars} onBack={goBack} />
+  // The exit button opens the parent gate; passing it uses navigate()
+  // (pushState) instead of history.back(), since popstate is trapped above.
+  else if (screen === 'baby') content = <BabyModeScreen lang={lang} onBack={() => setGateFor('exitBaby')} />
+  else content = <HomeScreen lang={lang} onOpenParents={() => setGateFor('parents')} onSelect={(next) => navigate(next)} stars={stars} />
+
+  return (
+    <>
+      {content}
+      {gateFor && <ParentGate isEn={lang === 'en'} onSuccess={passGate} onCancel={() => setGateFor(null)} />}
+    </>
+  )
 }
