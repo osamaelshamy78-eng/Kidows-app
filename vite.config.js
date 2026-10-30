@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
-        name: 'روضة الصبيان',
-        short_name: 'روضة الصبيان',
+        name: 'نور الصغار',
+        short_name: 'نور الصغار',
         description: 'تطبيق إسلامي تفاعلي للأطفال من عمر سنة',
         lang: 'ar',
         dir: 'rtl',

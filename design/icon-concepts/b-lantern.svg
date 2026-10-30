@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="75%"><stop offset="0" stop-color="#2F7C7C"/><stop offset="1" stop-color="#1D4E4E"/></radialGradient>
+    <radialGradient id="light" cx="50%" cy="55%" r="60%"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".6" stop-color="#F4C978"/><stop offset="1" stop-color="#E8A33D"/></radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#F4C978" stop-opacity=".5"/><stop offset="1" stop-color="#F4C978" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="290" r="180" fill="url(#glow)"/>
+  <!-- hanger -->
+  <path d="M256 70v34" stroke="#F4C978" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="256" cy="64" r="12" fill="none" stroke="#F4C978" stroke-width="8"/>
+  <!-- cap -->
+  <path d="M206 140q50-48 100 0z" fill="#E8A33D"/>
+  <rect x="190" y="138" width="132" height="22" rx="11" fill="#B5573A"/>
+  <!-- glass body -->
+  <path d="M200 160h112l26 70v100l-26 50H200l-26-50V230z" fill="url(#light)" stroke="#B5573A" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M256 160v220M174 280h164" stroke="#B5573A" stroke-width="6" opacity=".55"/>
+  <!-- little crescent inside -->
+  <path d="M268 232a36 36 0 1 0 0 72a29 29 0 1 1 0-72z" fill="#1D4E4E" opacity=".75"/>
+  <!-- base -->
+  <rect x="196" y="380" width="120" height="22" rx="11" fill="#B5573A"/>
+  <path d="M226 402h60l-10 22h-40z" fill="#E8A33D"/>
+  <circle cx="120" cy="150" r="6" fill="#FBF6EC"/><circle cx="400" cy="130" r="8" fill="#FBF6EC"/><circle cx="410" cy="360" r="5" fill="#FBF6EC" opacity=".8"/>
+</svg>

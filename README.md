@@ -1,4 +1,4 @@
-# روضة الصبيان (Rawdat Al-Sibyan) — Islamic Kids PWA
+# نور الصغار (Little Noor) — Islamic Kids PWA
 
 بداية بسيطة لتطبيق إسلامي تفاعلي للأطفال (1-5 سنين)، أول feature: أذكار الصباح والمساء.
 
