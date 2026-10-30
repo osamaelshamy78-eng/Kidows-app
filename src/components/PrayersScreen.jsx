@@ -19,13 +19,13 @@ export default function PrayersScreen({ lang = 'ar', onBack }) {
           const name = isEn ? translation.name : p.name
           const time = isEn ? translation.time : p.time
           return (
-            <button key={p.id} onClick={() => setOpen(isOpen ? null : p.id)} className="w-full bg-white rounded-3xl shadow-md py-5 px-6 text-right active:scale-95 transition-transform">
+            <button key={p.id} onClick={() => setOpen(isOpen ? null : p.id)} className="w-full bg-white rounded-3xl shadow-md py-5 px-6 text-start active:scale-95 transition-transform">
               <div className="flex items-center justify-between">
                 <span className="text-4xl">{p.icon}</span>
                 <span className="font-display text-xl text-ink">{name}</span>
               </div>
               {isOpen && (
-                <div className="mt-4 pt-4 border-t border-ink/10 flex flex-col gap-1 text-left" dir={isEn ? 'ltr' : 'rtl'}>
+                <div className="mt-4 pt-4 border-t border-ink/10 flex flex-col gap-1 text-start" dir={isEn ? 'ltr' : 'rtl'}>
                   <p className="font-body text-ink/70">{isEn ? 'Rak‘ahs: ' : 'عدد الركعات: '}<span className="font-bold text-teal-dark">{p.rakaat}</span></p>
                   <p className="font-body text-ink/70">{time}</p>
                 </div>

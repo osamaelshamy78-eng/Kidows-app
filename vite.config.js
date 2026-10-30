@@ -33,7 +33,21 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallbackDenylist: [/^\/api\//],
+        // Keep every narrated phrase on the device so replays work offline
+        // and don't cost another ElevenLabs request.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname === '/api/tts',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'tts-audio',
+              expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 90 },
+              cacheableResponse: { statuses: [200] }
+            }
+          }
+        ]
       }
     })
   ]

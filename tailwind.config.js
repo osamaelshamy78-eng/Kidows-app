@@ -25,6 +25,21 @@ export default {
         display: ['Lalezar', 'cursive'],
         body: ['Tajawal', 'sans-serif']
       },
+      keyframes: {
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-8px)' },
+          '75%': { transform: 'translateX(8px)' }
+        },
+        pop: {
+          '0%': { transform: 'scale(0.4)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' }
+        }
+      },
+      animation: {
+        shake: 'shake 0.3s ease-in-out 1',
+        pop: 'pop 0.25s ease-out 1'
+      },
       borderRadius: {
         blob: '42% 58% 65% 35% / 45% 40% 60% 55%'
       }

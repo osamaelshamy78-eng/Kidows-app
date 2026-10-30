@@ -80,11 +80,15 @@ export default function App() {
 
   const goBack = useCallback(() => window.history.back(), [])
 
-  function addStar() {
-    const next = stars + 1
-    setStars(next)
-    localStorage.setItem('stars', String(next))
-  }
+  // Functional update: games can award several stars quickly (and from
+  // timeouts), so reading `stars` from the closure would lose some.
+  const addStar = useCallback(() => {
+    setStars((value) => {
+      const next = value + 1
+      localStorage.setItem('stars', String(next))
+      return next
+    })
+  }, [])
 
   if (screen === 'morning') return <AdhkarScreen type="morning" items={morningAdhkar} lang={lang} onBack={goBack} onComplete={addStar} />
   if (screen === 'evening') return <AdhkarScreen type="evening" items={eveningAdhkar} lang={lang} onBack={goBack} onComplete={addStar} />
