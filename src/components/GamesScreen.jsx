@@ -7,6 +7,8 @@ import PuzzleGame from './games/PuzzleGame.jsx'
 import DifferenceGame from './games/DifferenceGame.jsx'
 import LettersGame from './games/LettersGame.jsx'
 import NumbersGame from './games/NumbersGame.jsx'
+import ShadowGame from './games/ShadowGame.jsx'
+import WuduOrderGame from './games/WuduOrderGame.jsx'
 import { stopAudio } from '../utils/audio.js'
 
 const games = [
@@ -18,7 +20,9 @@ const games = [
   { id: 'puzzle', icon: '🧩', ar: 'ركّب الصورة', en: 'Picture Puzzle', color: 'bg-gold' },
   { id: 'difference', icon: '👀', ar: 'اكتشف الاختلاف', en: 'Find the Difference', color: 'bg-teal-dark' },
   { id: 'letters', icon: '🔤', ar: 'الحروف والكلمات', en: 'Letters & Words', color: 'bg-brick' },
-  { id: 'numbers', icon: '🔢', ar: 'تعلّم الأرقام', en: 'Learn Numbers', color: 'bg-night' }
+  { id: 'numbers', icon: '🔢', ar: 'تعلّم الأرقام', en: 'Learn Numbers', color: 'bg-night' },
+  { id: 'shadow', icon: '🌑', ar: 'طابق الظل', en: 'Shadow Match', color: 'bg-teal' },
+  { id: 'wudu', icon: '🤲', ar: 'رتّب الوضوء', en: 'Wudu Steps', color: 'bg-gold' }
 ]
 
 export default function GamesScreen({ lang = 'ar', onBack, onComplete }) {
@@ -43,6 +47,8 @@ export default function GamesScreen({ lang = 'ar', onBack, onComplete }) {
   if (game === 'difference') return <DifferenceGame key={playKey} {...props} />
   if (game === 'letters') return <LettersGame key={playKey} {...props} />
   if (game === 'numbers') return <NumbersGame key={playKey} {...props} />
+  if (game === 'shadow') return <ShadowGame key={playKey} {...props} />
+  if (game === 'wudu') return <WuduOrderGame key={playKey} {...props} />
 
   return (
     <div className="min-h-screen bg-cream px-6 py-8" dir={isEn ? 'ltr' : 'rtl'}>

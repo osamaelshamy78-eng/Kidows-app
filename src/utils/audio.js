@@ -20,6 +20,22 @@ let inflight = null
 // API key (e.g. `npm run dev`), so we stop asking for the rest of the session.
 let cloudStatus = 'unknown'
 const clipCache = new Map()
+const SOUND_KEY = 'kidows_sound'
+
+function readSoundSetting() {
+  try { return localStorage.getItem(SOUND_KEY) !== 'off' } catch { return true }
+}
+let soundEnabled = readSoundSetting()
+
+export function isSoundEnabled() {
+  return soundEnabled
+}
+
+export function setSoundEnabled(enabled) {
+  soundEnabled = enabled
+  try { localStorage.setItem(SOUND_KEY, enabled ? 'on' : 'off') } catch { /* private mode */ }
+  if (!enabled) stopAudio()
+}
 
 // A 1ms silent WAV, used only to unlock the player on iOS.
 const SILENT_WAV = 'data:audio/wav;base64,UklGRjQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YRAAAAAAAAAAAAAAAAAAAAAAAAAA'
@@ -213,7 +229,7 @@ export async function playText(text, lang = 'ar') {
   stopAudio()
   const myId = requestId
   const clean = prepareText(text, lang)
-  if (!clean) return false
+  if (!clean || !soundEnabled) return false
 
   if (lang !== 'en') {
     const url = await fetchCloudClip(clean, myId)
@@ -228,6 +244,7 @@ export async function playText(text, lang = 'ar') {
 
 export async function playItem(item, lang = 'ar') {
   stopAudio()
+  if (!soundEnabled) return false
   if (lang !== 'en' && item?.audio) {
     const myId = requestId
     if (await playUrl(item.audio, myId)) return true
