@@ -4,7 +4,7 @@ import { extraStories } from '../data/stories_extra.js'
 import { companionStories } from '../data/companions_extra.js'
 import { storyTranslationsEn } from '../data/i18n.js'
 import { companionTranslationsEn } from '../data/companions_i18n.js'
-import { playText, stopAudio } from '../utils/audio.js'
+import { playItem, playText, stopAudio } from '../utils/audio.js'
 
 export default function StoryScreen({ storyId, lang = 'ar', onBack, onComplete }) {
   const allStories = [...stories, ...extraStories, ...companionStories]
@@ -57,7 +57,7 @@ export default function StoryScreen({ storyId, lang = 'ar', onBack, onComplete }
         <div className="text-8xl">{current.icon}</div>
         <div className="bg-white rounded-3xl shadow-xl px-6 py-8 w-full max-w-sm">
           <p className="font-body text-xl leading-relaxed text-center text-ink">{currentText}</p>
-          <button onClick={() => playText(currentText, lang)} className="mx-auto mt-5 flex items-center justify-center w-14 h-14 rounded-full bg-teal text-white shadow-md active:scale-90 transition-transform" aria-label={isEn ? 'Listen to story' : 'استمع إلى القصة'}>🔊</button>
+          <button onClick={() => (isEn ? playText(currentText, 'en') : playItem(current, 'ar'))} className="mx-auto mt-5 flex items-center justify-center w-14 h-14 rounded-full bg-teal text-white shadow-md active:scale-90 transition-transform" aria-label={isEn ? 'Listen to story' : 'استمع إلى القصة'}>🔊</button>
         </div>
       </div>
 

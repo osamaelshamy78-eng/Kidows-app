@@ -39,6 +39,17 @@ export default defineConfig({
         // and don't cost another ElevenLabs request.
         runtimeCaching: [
           {
+            // Pre-recorded narration in public/audio: cache once, play offline.
+            urlPattern: ({ url }) => url.pathname.startsWith('/audio/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'narration',
+              expiration: { maxEntries: 300 },
+              cacheableResponse: { statuses: [200] },
+              rangeRequests: true
+            }
+          },
+          {
             urlPattern: ({ url }) => url.pathname === '/api/tts',
             handler: 'CacheFirst',
             options: {
