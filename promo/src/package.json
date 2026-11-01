@@ -1,0 +1,17 @@
+{
+  "name": "little-noor-promo",
+  "version": "1.0.0",
+  "description": "Renders the Little Noor promo videos",
+  "scripts": {
+    "capture": "node capture.cjs && node capture-baby.cjs",
+    "vo": "node fetch-vo.cjs",
+    "render": "node render.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4"
+  }
+}

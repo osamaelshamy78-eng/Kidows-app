@@ -2,3 +2,5 @@ node_modules/
 dist/
 .vercel/
 .env*
+promo/out/
+promo/src/clean/
