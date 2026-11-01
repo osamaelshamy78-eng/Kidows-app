@@ -1,0 +1,40 @@
+// Captures real screens of the app at phone size for the promo videos.
+const { chromium } = require('playwright')
+const out = require('path').join(__dirname, '../shots')
+;(async () => {
+  const b = await chromium.launch()
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2.77, serviceWorkers: 'block' })
+  await ctx.addInitScript(() => { localStorage.setItem('stars', '27'); localStorage.setItem('kidows_sound', 'off') })
+  const p = await ctx.newPage()
+  // Fix the clock to morning so the home screen shows the sun.
+  await p.clock.setFixedTime(new Date('2026-10-30T08:30:00'))
+  const shot = async (n) => { await p.waitForTimeout(450); await p.screenshot({ path: `${out}/${n}.png` }) }
+  const go = async () => { await p.goto('http://localhost:4173/'); await p.waitForTimeout(1200) }
+  await go(); await shot('home')
+  await p.getByText('أذكار الصباح').click(); await shot('adhkar1')
+  await p.getByText('قلتها ✅').click(); await shot('adhkar2')
+  await go(); await p.getByText('أذكار المساء').click(); await shot('evening')
+  await go(); await p.getByText('قصص الأنبياء').click(); await shot('stories')
+  await p.getByText('النبي يونس والحوت').click(); for (let i = 0; i < 3; i++) await p.getByText('التالي').click(); await shot('story-yunus')
+  await go(); await p.getByText('قصص الأنبياء').click(); await p.getByText('سيدنا أبو بكر الصديق').click(); await shot('story-abubakr')
+  await go(); await p.getByText('ألعاب ممتعة').click(); await shot('games')
+  await p.getByRole('button', { name: 'لعبة الذاكرة' }).click()
+  const cards = p.locator('.grid button'); await cards.nth(0).click(); await cards.nth(1).click(); await p.waitForTimeout(1200); await cards.nth(2).click(); await shot('memory')
+  await p.getByRole('button', { name: 'العودة' }).first().click()
+  await p.getByRole('button', { name: 'كتاب التلوين' }).click()
+  const colors = ['#ef4444', '#facc15', '#22c55e', '#3b82f6', '#a855f7', '#f59e0b', '#ec4899', '#8b5a2b', '#3b82f6', '#facc15']
+  const paths = p.locator('svg path'); const n = await paths.count()
+  for (let i = 0; i < n - 1; i++) { await p.locator(`button[aria-label="${colors[i % colors.length]}"]`).click(); await paths.nth(i).click({ force: true }) }
+  await shot('coloring')
+  await p.getByRole('button', { name: 'العودة' }).first().click()
+  await p.getByRole('button', { name: 'رتّب الوضوء' }).click()
+  for (const s of ['بسم الله', 'غسل اليدين', 'المضمضة والاستنشاق']) await p.getByRole('button', { name: s }).click()
+  await shot('wudu-order')
+  await p.getByRole('button', { name: 'العودة' }).first().click()
+  await p.getByRole('button', { name: 'الحروف والكلمات' }).click(); await shot('letters')
+  await p.getByRole('button', { name: 'العودة' }).first().click()
+  await p.getByRole('button', { name: 'تعلّم الأرقام' }).click(); await shot('numbers')
+  await go(); await p.getByText('الألعاب والأسئلة').click(); await p.locator('button', { hasText: 'المستوى 1' }).click(); await p.locator('.flex.flex-col.gap-3 button').nth(1).click(); await shot('quiz')
+  await go(); await p.getByText('وضع مبسّط للرضّع').click(); await p.waitForTimeout(800); await shot('baby')
+  await b.close()
+})()

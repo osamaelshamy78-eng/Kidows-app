@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@500;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #FBF6EC; }
+  .layer { position: absolute; inset: 0; opacity: 0; }
+  /* light scenes */
+  #bg { position: absolute; inset: 0; background: #FBF6EC; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(60px); }
+  #caption { position: absolute; top: 150px; left: 70px; right: 70px; text-align: center; direction: rtl; }
+  #caption h2 { font-family: Lalezar; font-size: 92px; line-height: 1.15; color: #1D4E4E; }
+  #caption p { font-family: Tajawal; font-weight: 700; font-size: 46px; color: #2A6F6F; margin-top: 14px; }
+  #phone { position: absolute; left: 50%; top: 520px; width: 636px; height: 1334px; margin-left: -318px; border-radius: 76px; background: #1F2D3D; padding: 18px; box-shadow: 0 40px 90px rgba(29,78,78,.35); }
+  #screen { position: relative; width: 600px; height: 1298px; border-radius: 60px; overflow: hidden; background: #FBF6EC; }
+  #screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+  #brandTag { position: absolute; top: 60px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 14px; direction: rtl; font-family: Lalezar; font-size: 44px; color: #2A6F6F; }
+  #brandTag img { height: 64px; }
+  /* dark teal scenes */
+  .teal { background: radial-gradient(circle at 50% 42%, #2F7C7C 0%, #1D4E4E 70%); }
+  .dot { position: absolute; border-radius: 50%; background: #FBF6EC; }
+  #hook .wrap, #cta .wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; direction: rtl; text-align: center; padding: 0 80px; }
+  #hook img.mark { height: 420px; filter: drop-shadow(0 0 60px rgba(244,201,120,.55)); }
+  #hook h1 { font-family: Lalezar; font-size: 168px; color: #FBF6EC; line-height: 1.1; margin-top: 40px; }
+  #hook .en { font-family: Tajawal; font-weight: 800; font-size: 54px; color: #F4C978; direction: ltr; }
+  #hook p { font-family: Tajawal; font-weight: 700; font-size: 58px; color: #FBF6EC; margin-top: 44px; line-height: 1.35; }
+  #cta h2 { font-family: Lalezar; font-size: 104px; color: #FBF6EC; line-height: 1.15; }
+  #cta .qr { margin-top: 56px; background: #fff; padding: 30px; border-radius: 44px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  #cta .qr svg { width: 470px; height: 470px; display: block; }
+  #cta .url { margin-top: 48px; font-family: Inter; font-weight: 800; font-size: 72px; color: #F4C978; direction: ltr; letter-spacing: .5px; }
+  #cta .perks { margin-top: 30px; font-family: Tajawal; font-weight: 700; font-size: 44px; color: #FBF6EC; opacity: .9; }
+  #cta .icon { position: absolute; top: 120px; left: 50%; margin-left: -80px; width: 160px; height: 160px; border-radius: 38px; box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+  /* MAMBZ outro, rebuilt from the end card used in earlier MAMBZ promo videos */
+  #outro { background: #050b18; }
+  #outro .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(40,90,160,.22) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(40,90,160,.22) 1.5px, transparent 1.5px); background-size: 140px 140px; background-position: 30px 50px; }
+  #outro .glow { position: absolute; left: 50%; top: 47%; width: 1500px; height: 1500px; margin: -750px 0 0 -750px; border-radius: 50%; background: radial-gradient(circle, rgba(13,80,190,.95) 0%, rgba(8,48,120,.55) 30%, rgba(5,11,24,0) 62%); }
+  #outro .wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Inter; padding-bottom: 60px; }
+  #outro .dev { font-weight: 700; font-size: 46px; letter-spacing: .38em; color: #8d9cb2; margin-right: -.38em; }
+  #outro .name { font-weight: 900; font-size: 196px; letter-spacing: .06em; color: #eef3fa; margin-top: 34px; line-height: 1; margin-right: -.06em; }
+  #outro .name span { color: #3cc6ff; }
+  #outro .sub { font-weight: 700; font-size: 38px; letter-spacing: .36em; color: #8d9cb2; margin-top: 52px; margin-right: -.36em; }
+  #outro .line { width: 600px; height: 3px; margin-top: 82px; background: linear-gradient(90deg, rgba(20,151,255,0), #1e8bff 50%, rgba(20,151,255,0)); }
+  #outro .site { font-weight: 800; font-size: 60px; color: #ffffff; margin-top: 66px; }
+  #outro .svc { font-weight: 500; font-size: 42px; color: #9eafc4; margin-top: 34px; }
+</style>
+</head>
+<body>
+  <div id="light" class="layer">
+    <div id="bg">
+      <div class="blob" style="width:700px;height:700px;left:-260px;top:-180px;background:rgba(244,201,120,.45)"></div>
+      <div class="blob" style="width:760px;height:760px;right:-320px;top:900px;background:rgba(90,155,155,.28)"></div>
+    </div>
+    <div id="brandTag"><img src="logo-mark.svg"><span>نور الصغار</span></div>
+    <div id="caption"><h2></h2><p></p></div>
+    <div id="phone"><div id="screen"></div></div>
+  </div>
+
+  <div id="hook" class="layer teal">
+    <div class="dot" style="width:16px;height:16px;left:180px;top:330px"></div>
+    <div class="dot" style="width:22px;height:22px;left:860px;top:280px"></div>
+    <div class="dot" style="width:12px;height:12px;left:900px;top:1500px;opacity:.8"></div>
+    <div class="dot" style="width:14px;height:14px;left:150px;top:1380px;opacity:.7"></div>
+    <div class="wrap">
+      <img class="mark" src="logo-mark.svg">
+      <h1>نور الصغار</h1>
+      <div class="en">Little Noor</div>
+      <p class="hookText"></p>
+    </div>
+  </div>
+
+  <div id="cta" class="layer teal">
+    <img class="icon" src="app-icon.png">
+    <div class="wrap">
+      <h2 class="ctaText"></h2>
+      <div class="qr" id="qr"></div>
+      <div class="url" id="url"></div>
+      <div class="perks"></div>
+    </div>
+  </div>
+
+  <div id="outro" class="layer">
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <div class="wrap">
+      <div class="dev o1">DEVELOPED BY</div>
+      <div class="name o2"><span>M</span>AMBZ</div>
+      <div class="sub o3">FOR BUSINESS SOLUTIONS</div>
+      <div class="line o4"></div>
+      <div class="site o5">mambz.com</div>
+      <div class="svc o6">Websites · Mobile apps · Automation</div>
+    </div>
+  </div>
+
+<script>
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const ease = (x) => 1 - Math.pow(1 - clamp(x), 3)
+const $ = (s) => document.querySelector(s)
+let CFG, T
+
+// Builds the timeline: hook, feature scenes, CTA, outro, one after another.
+window.setup = (cfg) => {
+  CFG = cfg
+  $('.hookText').innerHTML = cfg.hook
+  $('.ctaText').innerHTML = cfg.cta
+  $('#url').textContent = cfg.url
+  $('#qr').innerHTML = cfg.qrSvg
+  $('#cta .perks').textContent = cfg.perks
+  let t = 0
+  T = { hook: [0, cfg.hookDur] }
+  t = cfg.hookDur
+  T.scenes = cfg.scenes.map((s) => { const r = [t, t + s.dur]; t += s.dur; return r })
+  T.cta = [t, t + cfg.ctaDur]; t += cfg.ctaDur
+  T.outro = [t, t + cfg.outroDur]; t += cfg.outroDur
+  T.total = t
+  $('#screen').innerHTML = cfg.scenes.map((s) => `<img src="${s.img}">`).join('')
+  return T
+}
+
+function fade(t, [a, b], fin = 0.35, fout = 0.35) {
+  return clamp((t - a) / fin) * clamp((b - t) / fout)
+}
+
+window.render = (t) => {
+  // hook
+  const hk = fade(t, T.hook, 0.01, 0.4)
+  $('#hook').style.opacity = hk
+  const hp = ease((t - T.hook[0]) / 0.9)
+  $('#hook .mark').style.transform = `translateY(${(1 - hp) * 80}px) scale(${0.85 + 0.15 * hp})`
+  $('#hook h1').style.transform = `translateY(${(1 - ease((t - 0.2) / 0.8)) * 60}px)`
+  $('#hook p').style.opacity = ease((t - 0.6) / 0.6)
+
+  // feature scenes share one phone
+  const first = T.scenes[0][0], last = T.scenes[T.scenes.length - 1][1]
+  // Each section fully fades out before the next fades in (no muddy overlaps).
+  $('#light').style.opacity = fade(t, [first - 0.3, last - 0.05], 0.4, 0.3)
+  const enter = ease((t - first + 0.3) / 0.8)
+  $('#phone').style.transform = `translateY(${(1 - enter) * 500}px)`
+  const imgs = document.querySelectorAll('#screen img')
+  let cur = 0
+  T.scenes.forEach(([a, b], i) => {
+    const xIn = i === 0 ? 1 : clamp((t - a + 0.15) / 0.3)
+    const xOut = i === T.scenes.length - 1 ? 1 : clamp((b + 0.15 - t) / 0.3)
+    imgs[i].style.opacity = xIn * xOut
+    if (t >= a) cur = i
+    // gentle Ken Burns inside the phone
+    const k = clamp((t - a) / (b - a))
+    imgs[i].style.transform = `scale(${1 + 0.035 * k})`
+  })
+  const s = CFG.scenes[cur], [a, b] = T.scenes[cur]
+  if ($('#caption h2').dataset.i !== String(cur)) {
+    $('#caption h2').innerHTML = s.title; $('#caption p').innerHTML = s.sub || ''; $('#caption h2').dataset.i = cur
+  }
+  // Scenes marked keepCaption continue the previous caption instead of re-animating it.
+  let capStart = cur; while (capStart > 0 && CFG.scenes[capStart].keepCaption) capStart--
+  let capEnd = cur; while (capEnd < T.scenes.length - 1 && CFG.scenes[capEnd + 1].keepCaption) capEnd++
+  const cA = T.scenes[capStart][0], cB = T.scenes[capEnd][1]
+  const cIn = ease((t - cA) / 0.45), cOut = capEnd === T.scenes.length - 1 ? 1 : clamp((cB - t) / 0.25)
+  $('#caption').style.opacity = cIn * cOut
+  $('#caption').style.transform = `translateY(${(1 - cIn) * 40}px)`
+
+  // CTA
+  $('#cta').style.opacity = fade(t, [T.cta[0] - 0.05, T.cta[1] - 0.05], 0.35, 0.3)
+  const cp = ease((t - T.cta[0]) / 0.7)
+  $('#cta .qr').style.transform = `scale(${0.8 + 0.2 * cp})`
+  $('#cta .url').style.opacity = ease((t - T.cta[0] - 0.4) / 0.5)
+  $('#cta .perks').style.opacity = ease((t - T.cta[0] - 0.7) / 0.5)
+
+  // MAMBZ outro
+  $('#outro').style.opacity = fade(t, [T.outro[0] - 0.05, T.outro[1] + 1], 0.3, 0.01)
+  ;['.o1', '.o2', '.o3', '.o4', '.o5', '.o6'].forEach((sel, i) => {
+    const p = ease((t - T.outro[0] - 0.25 - i * 0.14) / 0.6)
+    const el = $('#outro ' + sel); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 30}px)`
+  })
+  $('#outro .glow').style.transform = `scale(${0.9 + 0.1 * ease((t - T.outro[0]) / 1.5)})`
+}
+</script>
+</body>
+</html>
