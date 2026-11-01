@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mambz.littlenoor",
+      "sha256_cert_fingerprints": [
+        "04:83:B9:2C:BE:31:B6:2F:58:82:14:EC:1E:65:16:9E:F4:28:09:AD:66:04:FA:1E:B2:94:48:4D:BD:4C:A2:DD"
+      ]
+    }
+  }
+]
